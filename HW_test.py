@@ -2,6 +2,7 @@
 
 import numpy as np
 import scipy.stats as stats
+import scipy.optimize as optimize
 import math
 
 import Black
@@ -34,8 +35,10 @@ class PriceCapHW:
     def __N(self, x):
         return stats.norm.cdf(x)
 
-    def priceHWCap(self):
+    def priceHWCap(self, params):
         # pricing Cap value with Hull-White model
+        a = params[0]
+        vol = params[1]
         vols = self.vols
         P = self.__P()
         mats = self.mats
@@ -45,8 +48,8 @@ class PriceCapHW:
 
         BK = Black.Black(vols, P, mats, Rcap, L, tenor)
         self.market = BK.priceBlackCap()
-        model = []
 
+        model = []
         for i in range(0, len(vols) - 1):
             volP = np.sqrt(((vol * vol) / (2 * a * a * a))  * (1 - math.exp(-2 * mats[i] * a)) \
             * (1 - math.exp(-a * (mats[i+1] - mats[i]))) ** 2)
@@ -59,9 +62,9 @@ class PriceCapHW:
 
         return model
 
-    def calibrateToMarketPrice(self):
+    def calibrateToMarketPrice(self, params):
         # get squared errors between market quote and model
-        model = self.priceHWCap()
+        model = self.priceHWCap(params)
         market = self.market
 
         se = 0.0
@@ -70,9 +73,13 @@ class PriceCapHW:
 
         return se
 
-#    def getParameters(self):
-        # two dimensional Newton-Raphson minimization rutine
+    def getParameters(self):
+        # two dimensional minimization
+        # to use "Newton-CG", must difine volatility derivative and alpha derivative
+        params = [1.0, 1.0]
+        res  = optimize.minimize(self.calibrateToMarketPrice, params)
 
+        return res
 
 if __name__ == '__main__':
     mats = [1.0, 2.0 ,3.0, 4.0] # caplet maturities
@@ -86,5 +93,5 @@ if __name__ == '__main__':
     L = 100 # principal amount of loan
 
     HW = PriceCapHW(mats, vols, rates, a, FV, vol, Rcap, tenor, L)
-
-    print HW.calibrateToMarketPrice()
+    p = HW.getParameters()
+    print p

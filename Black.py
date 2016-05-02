@@ -35,6 +35,7 @@ class Black:
         self.F = F
 
     def priceBlackCap(self):
+
         self.__getFowardRates()
 
         F = self.F
@@ -59,11 +60,3 @@ class Black:
         d2 = d1 - vol * np.sqrt(tau)
 
         return P * dtau * L * self.__N(d1) - Rcap * self.__N(d2)
-
-if __name__ == '__main__':
-    capVol = []
-    PDB = []
-    mturity = []
-    Rcap = 0.5
-
-    b = Black()
