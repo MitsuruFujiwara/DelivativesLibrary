@@ -7,18 +7,18 @@ import math
 
 import Black
 
-class PriceCapHW:
+class HW:
 
     def __init__(self, mats, vols, rates, a, FV, vol, Rcap, tenor, L):
-        self.mats = mats
-        self.vols = vols
-        self.rates = rates
-        self.a = a
-        self.FV = FV
-        self.vol = vol
-        self.Rcap = Rcap
-        self.tenor = tenor
-        self.L = L
+        self.mats = mats # caplet maturities
+        self.vols = vols # market quote caplet volatilities
+        self.rates = rates # short rates
+        self.a = a # mean reversion parameter
+        self.FV = FV # face value of loan
+        self.vol = vol # length between payment time
+        self.Rcap = Rcap # cap rate
+        self.tenor = tenor # length of time between payment date
+        self.L = L # principal amount of loan
 
     def __P(self):
         mats = self.mats
@@ -82,16 +82,16 @@ class PriceCapHW:
         return res
 
 if __name__ == '__main__':
-    mats = [1.0, 2.0 ,3.0, 4.0] # caplet maturities
-    vols = [0.5, 0.5, 0.5, 0.5] # market quote caplet volatilities
-    rates = [0.01, 0.02, 0.03, 0.04] # short rates
-    Rcap = 0.05 # cap rate
-    a = 0.001 # mean reversion parameter
-    FV = 100 # face value of loan
-    vol = 0.5 # length between payment time
-    tenor = 0.5 # length of time between payment date
-    L = 100 # principal amount of loan
+    mats = [1.0, 2.0 ,3.0, 4.0]
+    vols = [0.5, 0.5, 0.5, 0.5]
+    rates = [0.01, 0.02, 0.03, 0.04]
+    Rcap = 0.05
+    a = 0.001
+    FV = 100
+    vol = 0.5
+    tenor = 0.5
+    L = 100
 
-    HW = PriceCapHW(mats, vols, rates, a, FV, vol, Rcap, tenor, L)
-    p = HW.getParameters()
+    hw = HW(mats, vols, rates, a, FV, vol, Rcap, tenor, L)
+    p = hw.getParameters()
     print p
