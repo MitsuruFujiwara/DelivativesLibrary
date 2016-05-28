@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-import pandas as pd
 
 class MonteCalroLFM:
     # A Monte Calro simulation of LIBOR log-foward dynamics to value European swaption
@@ -32,6 +31,7 @@ class MonteCalroLFM:
         for i in range(1, self.N):
             v.append((a * (i * self.dt) + d) * np.exp(-b * (i * self.dt)) + c)
             tau.append(0.5)
+
         self.v = v
         self.tau = tau
 
@@ -50,6 +50,7 @@ class MonteCalroLFM:
 
         fwd = []
         fwd.append(np.zeros(20))
+        payoff = 0.0
 
         for i in range(1, M): # number of simulation
             drift = 0.0
@@ -59,7 +60,6 @@ class MonteCalroLFM:
             _sum1 = 0.0
             mu = 0.0
             mu1 = 0.0
-            payoff = 0.0
 
             for l in range(0, N): # number of time steps
                 F = []
@@ -102,6 +102,9 @@ class MonteCalroLFM:
 
         swaptionPrice = np.exp(-F0 * T) * payoff / M
 
+        self.SD = np.sqrt((_sum1 - _sum1 * _sum1 / M)) * np.exp(-2.0 * F0 * T / (M - 1.0 ))
+        self.SE = self.SD / np.sqrt(M)
+
         return swaptionPrice
 
     def __getRandomNumbers(self):
@@ -116,17 +119,18 @@ class MonteCalroLFM:
         return r
 
 if __name__ == '__main__':
-    V = \
-    [[0.164, 0.158, 0.146, 0.138, 0.133, 0.129, 0.126, 0.123, 0.120, 0.117],\
+    V = [\
+    [0.164, 0.158, 0.146, 0.138, 0.133, 0.129, 0.126, 0.123, 0.120, 0.117],\
     [0.177, 0.156, 0.141, 0.131, 0.127, 0.124, 0.122, 0.119, 0.117, 0.114],\
     [0.176, 0.155, 0.139, 0.127, 0.123, 0.121, 0.119, 0.117, 0.115, 0.113],\
     [0.169, 0.146, 0.129, 0.119, 0.116, 0.114, 0.113, 0.111, 0.110, 0.108],\
     [0.158, 0.139, 0.124, 0.115, 0.111, 0.109, 0.108, 0.107, 0.105, 0.104],\
     [0.145, 0.129, 0.116, 0.108, 0.104, 0.103, 0.101, 0.099, 0.098, 0.096],\
-    [0.135, 0.115, 0.104, 0.098, 0.094, 0.093, 0.091, 0.088, 0.086, 0.084],]
+    [0.135, 0.115, 0.104, 0.098, 0.094, 0.093, 0.091, 0.088, 0.086, 0.084],\
+    ]
 
-    R = \
-    [[1.0],\
+    R = [\
+    [1.0],\
     [0.924, 1.0],\
     [0.707, 0.924, 1.0],\
     [0.557, 0.833, 0.981, 1.0],\
@@ -147,4 +151,7 @@ if __name__ == '__main__':
     numeraire = 1
 
     mc = MonteCalroLFM(R, V, initrate, strike, T, M, N, m, numeraire)
-    print mc.MonteCalro()
+
+    print "Price = " + str(mc.MonteCalro())
+    print "Standard Deviation = " + str(mc.SD)
+    print "Standard Error = " + str(mc.SE)
