@@ -49,10 +49,7 @@ class Black:
 
         caplet = []
         for i in range(0, len(capV) - 1):
-            cap = self.__BlackFormula(F[i], P[i], faceValue, Rcap, capV[i], t[i], tenor)
-            caplet.append(cap)
-
-        return caplet
+            yield self.__BlackFormula(F[i], P[i], faceValue, Rcap, capV[i], t[i], tenor)
 
     def __BlackFormula(self, F, P, L, Rcap, vol, tau, dtau):
         # compute cap price with Black's 1976 model
