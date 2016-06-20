@@ -53,8 +53,8 @@ class HW:
         # get squared errors between market quote and model
         model = list(self.priceHWCap(params))
         market = self.market
-
         se = 0.0
+
         for i in range(0, len(vols) - 1):
             se += ((model[i] - market[i]) / market[i]) ** 2
 
